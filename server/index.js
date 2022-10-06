@@ -7,8 +7,10 @@ const PORT = process.env.PORT || 3700;
 const io = new Server(server);
 
 io.on('connection', (socket) => {
+    console.log(socket.id);
     socket.on('position-change', (data) => {
-        console.log(data);});
+        console.log(data);
+    });
 
 
 

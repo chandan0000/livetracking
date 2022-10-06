@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:livetracking/socket_io_clinets.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -13,29 +14,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late IO.Socket socket;
   double? lattitude;
   double? longitude;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  SocketClient socketClient = SocketClient.instance;
 
   @override
   void initState() {
     super.initState();
-    initSocket();
+ 
   }
 
-  Future<void> initSocket() async {
-    try {
-      socket = IO.io('http://192.168.91.59:3700', <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': 'false',
-      });
-      socket.connect();
-      socket.onConnect((data) => {log('connected'), print(socket.id)});
-    } catch (e) {
-      log(e.toString());
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                   'lat': lattitude,
                   'long': longitude,
                 };
-                socket.emit('position-change', cords);
+                socketClient.socket!.emit('position-change', cords);
               }
             })
           ],
@@ -100,7 +90,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    socket.disconnect();
+    socketClient.socket!.disconnect();
     super.dispose();
   }
 
